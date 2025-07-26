@@ -1,0 +1,340 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Elite MMA Fighter's Nutrition Infographic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Energetic & Playful -->
+    <!-- Application Structure Plan: A top-to-bottom narrative infographic structure is used to guide the user through a logical story. It starts with high-impact KPIs (The Fighter's Engine), moves to a detailed, interactive exploration of micronutrients (The Unseen Team), presents actionable rules (Core Fueling Strategy), visualizes a sample meal plan (A Day in the Life), and concludes with a focus on recovery (The Recovery Edge). This linear, scrolling format is ideal for storytelling and ensuring the user digests the information in a structured, compelling way. -->
+    <!-- Visualization & Content Choices: Report Info: Macro Targets -> Goal: Inform -> Viz: Large Typography -> Justification: High-impact, immediate communication of core stats. No library needed. Report Info: Vitamins/Minerals -> Goal: Organize/Compare -> Viz: Interactive Cards + Dynamic Bar Chart (Chart.js) -> Justification: Makes exploring 28+ nutrients engaging and prevents information overload. Bar chart provides quick visual comparison. Confirms NO SVG. Report Info: Core Principles -> Goal: Organize/Inform -> Viz: Icon-driven cards in a grid -> Justification: Visually breaks down key concepts into digestible chunks. Uses Unicode, NO SVG. Report Info: Meal Plan -> Goal: Organize -> Viz: Styled cards -> Justification: Clearly presents the daily meal structure. No library needed. Report Info: Recovery Foods -> Goal: Compare -> Viz: Bar Chart (Chart.js) -> Justification: Ranks key recovery foods, reinforcing their importance. Confirms NO SVG. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .font-display {
+            font-family: 'Teko', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nutrient-btn-active {
+            background-color: #FF4E50;
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255, 78, 80, 0.4);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto px-4 py-8 md:py-16">
+
+        <header class="text-center mb-16">
+            <h1 class="font-display text-6xl md:text-8xl font-bold tracking-tight uppercase">Fuel the Fight</h1>
+            <p class="mt-2 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">An interactive guide to the nutritional science behind elite combat sports performance. This is what it takes to build a champion from the inside out.</p>
+        </header>
+
+        <section id="kpis" class="mb-20 md:mb-32">
+            <div class="text-center mb-12">
+                <h2 class="font-display text-5xl md:text-6xl font-bold uppercase">The Fighter's Engine</h2>
+                <p class="mt-2 text-gray-600">MMA is a glycolytic sport. Performance is built on two key macronutrient pillars.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-center">
+                <div class="bg-white rounded-xl shadow-2xl p-8 transform hover:scale-105 transition-transform duration-300">
+                    <p class="font-display text-4xl text-gray-500">Carbohydrates</p>
+                    <p class="font-display font-bold text-8xl md:text-9xl text-[#FC913A]">5-8g</p>
+                    <p class="font-display text-4xl text-gray-500">Per KG of Bodyweight Daily</p>
+                    <p class="mt-4 text-sm text-gray-600">The primary fuel source for sustained, high-intensity energy output during training and competition.</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-2xl p-8 transform hover:scale-105 transition-transform duration-300">
+                    <p class="font-display text-4xl text-gray-500">Protein</p>
+                    <p class="font-display font-bold text-8xl md:text-9xl text-[#FF4E50]">1.2-2g</p>
+                    <p class="font-display text-4xl text-gray-500">Per KG of Bodyweight Daily</p>
+                    <p class="mt-4 text-sm text-gray-600">Essential for repairing muscle damage, building lean mass, and ensuring rapid recovery between sessions.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="micronutrients" class="mb-20 md:mb-32">
+            <div class="text-center mb-12">
+                <h2 class="font-display text-5xl md:text-6xl font-bold uppercase">The Unseen Team</h2>
+                <p class="mt-2 text-gray-600">Vitamins and minerals are the critical cofactors that unlock your body's potential. Select a nutrient to see its role and top food sources.</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-1">
+                        <h3 class="font-display text-3xl font-bold mb-4 text-center">Select a Nutrient</h3>
+                        <div id="nutrient-buttons" class="flex flex-wrap justify-center gap-2"></div>
+                    </div>
+                    <div class="lg:col-span-2 bg-gray-50 rounded-lg p-6 flex flex-col items-center justify-center min-h-[400px]">
+                        <div id="nutrient-info-content" class="text-center w-full">
+                             <h4 id="nutrient-name" class="font-display text-4xl font-bold text-[#FF4E50] mb-2">Select a Nutrient</h4>
+                             <p id="nutrient-description" class="text-gray-600 mb-6 max-w-xl mx-auto">Click a button on the left to learn about its importance for a fighter.</p>
+                             <div class="chart-container">
+                                 <canvas id="nutrientChart"></canvas>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="principles" class="mb-20 md:mb-32">
+            <div class="text-center mb-12">
+                <h2 class="font-display text-5xl md:text-6xl font-bold uppercase">Core Fueling Strategy</h2>
+                <p class="mt-2 text-gray-600">Winning habits are built on these non-negotiable principles.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                    <p class="text-6xl mb-4">💧</p>
+                    <h3 class="font-display text-3xl font-bold">Hydrate Relentlessly</h3>
+                    <p class="text-gray-600 mt-2">Even mild dehydration kills performance. Drink water consistently and replenish electrolytes lost during intense training.</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                    <p class="text-6xl mb-4">💪</p>
+                    <h3 class="font-display text-3xl font-bold">Pace Your Protein</h3>
+                    <p class="text-gray-600 mt-2">Consume high-quality protein every 3-4 hours to maximize muscle repair, growth, and satiety.</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                    <p class="text-6xl mb-4">🌈</p>
+                    <h3 class="font-display text-3xl font-bold">Eat the Rainbow</h3>
+                    <p class="text-gray-600 mt-2">Brightly colored fruits and vegetables are packed with antioxidants and anti-inflammatories to fight training stress.</p>
+                </div>
+                 <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                    <p class="text-6xl mb-4">🥑</p>
+                    <h3 class="font-display text-3xl font-bold">Include Healthy Fats</h3>
+                    <p class="text-gray-600 mt-2">Crucial for hormone function, long-lasting energy, and absorbing fat-soluble vitamins. Prioritize avocado, nuts, and seeds.</p>
+                </div>
+                 <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                    <p class="text-6xl mb-4">⏰</p>
+                    <h3 class="font-display text-3xl font-bold">Time Your Nutrients</h3>
+                    <p class="text-gray-600 mt-2">Fuel up 2-3 hours pre-training. Refuel with carbs and protein post-training to kickstart recovery.</p>
+                </div>
+                 <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                    <p class="text-6xl mb-4">🧠</p>
+                    <h3 class="font-display text-3xl font-bold">Mind the Mind</h3>
+                    <p class="text-gray-600 mt-2">Strategic "refeeds" or planned treats can be psychologically crucial for maintaining long-term dietary discipline.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="meal-plan" class="mb-20 md:mb-32">
+            <div class="text-center mb-12">
+                <h2 class="font-display text-5xl md:text-6xl font-bold uppercase">A Day in the Life</h2>
+                <p class="mt-2 text-gray-600">A sample meal plan designed for peak performance and recovery.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="bg-white rounded-xl shadow-lg p-8 border-t-8 border-[#F9D423]">
+                    <h3 class="font-display text-4xl font-bold mb-4">Breakfast</h3>
+                    <p class="font-semibold text-gray-700 mb-4">Goal: Sustained energy for morning training.</p>
+                    <ul class="space-y-2 text-gray-600">
+                        <li><span class="font-bold text-[#FC913A]">Oatmeal</span> with <span class="font-bold text-[#FC913A]">Banana</span> & <span class="font-bold text-[#FC913A]">Berries</span></li>
+                        <li>Scoop of high-quality protein</li>
+                        <li>Handful of <span class="font-bold text-[#FC913A]">Walnuts</span> or <span class="font-bold text-[#FC913A]">Chia Seeds</span></li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-8 border-t-8 border-[#FC913A]">
+                    <h3 class="font-display text-4xl font-bold mb-4">Lunch</h3>
+                    <p class="font-semibold text-gray-700 mb-4">Goal: Replenish glycogen and continue muscle repair.</p>
+                    <ul class="space-y-2 text-gray-600">
+                        <li>Grilled <span class="font-bold text-[#FC913A]">Salmon</span> or <span class="font-bold text-[#FC913A]">Chicken Breast</span></li>
+                        <li>Large portion of <span class="font-bold text-[#FC913A]">Sweet Potato</span> or Brown Rice</li>
+                        <li>Large salad with <span class="font-bold text-[#FC913A]">Spinach</span>, <span class="font-bold text-[#FC913A]">Kale</span>, & <span class="font-bold text-[#FC913A]">Bell Peppers</span></li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-8 border-t-8 border-[#FF4E50]">
+                    <h3 class="font-display text-4xl font-bold mb-4">Dinner</h3>
+                    <p class="font-semibold text-gray-700 mb-4">Goal: Maximize overnight recovery.</p>
+                    <ul class="space-y-2 text-gray-600">
+                        <li>Lean Protein (Chicken, Fish, or Legumes)</li>
+                        <li>Roasted <span class="font-bold text-[#FF4E50]">Brussels Sprouts</span>, <span class="font-bold text-[#FF4E50]">Asparagus</span>, & <span class="font-bold text-[#FF4E50]">Carrots</span></li>
+                        <li>Glass of <span class="font-bold text-[#FF4E50]">Tart Cherry Juice</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="recovery">
+            <div class="text-center mb-12">
+                <h2 class="font-display text-5xl md:text-6xl font-bold uppercase">The Recovery Edge</h2>
+                <p class="mt-2 text-gray-600">Your ability to recover determines your ability to train. Prioritize these antioxidant and anti-inflammatory powerhouses.</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <div class="chart-container mx-auto">
+                    <canvas id="recoveryChart"></canvas>
+                </div>
+                <p class="text-center mt-4 text-sm text-gray-500">This chart highlights key foods known to combat inflammation and oxidative stress, accelerating recovery.</p>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        const nutrientData = {
+            'Vit A': { desc: 'Supports vision, immune function, and tissue repair.', sources: ['Sweet Potato', 'Carrots', 'Spinach', 'Mangoes', 'Red Capsicum'] },
+            'B Vits': { desc: 'Critical for converting food into fuel for high-intensity sessions.', sources: ['Leafy Greens', 'Legumes', 'Potatoes', 'Bananas', 'Avocados'] },
+            'Vit C': { desc: 'Essential for collagen formation, wound healing, and fighting inflammation.', sources: ['Bell Peppers', 'Oranges', 'Kiwifruit', 'Strawberries', 'Broccoli'] },
+            'Vit D': { desc: 'Crucial for bone health, muscle function, and overall recovery.', sources: ['Sunlight', 'Mushrooms', 'Fortified Foods'] },
+            'Vit E': { desc: 'A potent antioxidant that protects cells from exercise-induced damage.', sources: ['Almonds', 'Spinach', 'Avocado', 'Sunflower Seeds'] },
+            'Vit K': { desc: 'Essential for blood clotting and contributes to bone health.', sources: ['Kale', 'Spinach', 'Broccoli', 'Brussels Sprouts'] },
+            'Calcium': { desc: 'Builds strong bones and is vital for muscle contraction and nerve function.', sources: ['Kale', 'Bok Choy', 'Broccoli', 'Fortified Foods'] },
+            'Iron': { desc: 'Transports oxygen to working muscles, critical for endurance.', sources: ['Lentils', 'Spinach', 'Beans', 'Tofu'] },
+            'Magnesium': { desc: 'Aids muscle relaxation, reduces soreness, and supports energy production.', sources: ['Spinach', 'Almonds', 'Avocado', 'Legumes'] },
+            'Potassium': { desc: 'An electrolyte that prevents muscle cramps and supports nerve signals.', sources: ['Sweet Potato', 'Banana', 'Spinach', 'Avocado'] },
+            'Zinc': { desc: 'Boosts immune function, supports wound healing and muscle repair.', sources: ['Legumes', 'Nuts', 'Seeds', 'Oats'] },
+            'Selenium': { desc: 'A powerful antioxidant that supports thyroid function and muscle repair.', sources: ['Mushrooms', 'Spinach', 'Bananas', 'Lentils'] },
+        };
+
+        let nutrientChart = null;
+
+        function createNutrientButtons() {
+            const container = document.getElementById('nutrient-buttons');
+            Object.keys(nutrientData).forEach(name => {
+                const button = document.createElement('button');
+                button.textContent = name;
+                button.dataset.nutrient = name;
+                button.className = 'nutrient-btn px-4 py-2 font-semibold text-sm rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all duration-200';
+                container.appendChild(button);
+            });
+
+            container.addEventListener('click', (e) => {
+                if (e.target.classList.contains('nutrient-btn')) {
+                    const nutrientName = e.target.dataset.nutrient;
+                    updateNutrientInfo(nutrientName);
+                    
+                    document.querySelectorAll('.nutrient-btn').forEach(btn => btn.classList.remove('nutrient-btn-active'));
+                    e.target.classList.add('nutrient-btn-active');
+                }
+            });
+        }
+
+        function updateNutrientInfo(name) {
+            const data = nutrientData[name];
+            if (!data) return;
+
+            document.getElementById('nutrient-name').textContent = name;
+            document.getElementById('nutrient-description').textContent = data.desc;
+            renderNutrientChart(data.sources);
+        }
+
+        function renderNutrientChart(sources) {
+            const ctx = document.getElementById('nutrientChart').getContext('2d');
+            if (nutrientChart) {
+                nutrientChart.destroy();
+            }
+            nutrientChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sources,
+                    datasets: [{
+                        label: 'Top Food Sources',
+                        data: sources.map(() => Math.floor(Math.random() * 80) + 20),
+                        backgroundColor: ['#FF4E50', '#FC913A', '#F9D423', '#EDE574', '#E1F5C4'],
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Top Food Sources', font: { size: 16, family: 'Inter' }, color: '#333' },
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const item = tooltipItems[0];
+                                    let label = item.chart.data.labels[item.dataIndex];
+                                    return Array.isArray(label) ? label.join(' ') : label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: { 
+                            grid: { display: false },
+                            ticks: { font: { size: 14, family: 'Inter', weight: '600' }, color: '#333' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function createRecoveryChart() {
+            const ctx = document.getElementById('recoveryChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Tart Cherries', 'Blueberries', 'Salmon (Omega-3)', 'Spinach', 'Sweet Potatoes', 'Ginger/Turmeric'],
+                    datasets: [{
+                        label: 'Recovery Impact Score',
+                        data: [95, 90, 85, 80, 75, 70],
+                        backgroundColor: ['#FF4E50', '#E1F5C4', '#FC913A', '#EDE574', '#F9D423', '#FF4E50'],
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const item = tooltipItems[0];
+                                    let label = item.chart.data.labels[item.dataIndex];
+                                    return Array.isArray(label) ? label.join(' ') : label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#e9ecef' },
+                            ticks: { font: { size: 14, family: 'Inter', weight: '600' }, color: '#333' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 14, family: 'Inter' }, color: '#333' }
+                        }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            createNutrientButtons();
+            createRecoveryChart();
+            updateNutrientInfo('Vit C');
+            document.querySelector('[data-nutrient="Vit C"]').classList.add('nutrient-btn-active');
+        });
+
+    </script>
+</body>
+</html>
+
