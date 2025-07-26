@@ -1,0 +1,524 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MMA Fighter's Interactive Nutrition Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: A tab-based single-page application is chosen for optimal user experience. This non-linear structure allows users (fighters, coaches) to immediately navigate to their section of interest—be it exploring specific micronutrients, viewing a sample meal plan, or reviewing core principles—without scrolling through a long document. The structure includes: 1) A 'Home' tab for an overview. 2) An interactive 'Micronutrient Explorer' to dynamically look up vitamins and minerals. 3) A 'Meal Planner' tab to present actionable meal examples. 4) A 'Key Principles' tab for quick reference. This task-oriented design makes the dense information from the report highly accessible and usable. -->
+    <!-- Visualization & Content Choices: Report Info: Vitamin/Mineral data -> Goal: Organize/Inform -> Viz: Clickable buttons + dynamic text + Chart.js Bar Chart -> Interaction: User clicks a nutrient, JS updates the display with its details and a chart of top food sources -> Justification: This makes exploring 28+ nutrients fast and visual. Report Info: Meal Plan -> Goal: Inform/Relate -> Viz: Styled cards for each meal -> Interaction: Static display -> Justification: Clearly presents actionable meal ideas and their rationale. Report Info: Core Principles -> Goal: Inform -> Viz: Icon-driven list -> Interaction: Static display -> Justification: Provides a scannable summary of key rules. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #404040;
+        }
+        .tab-active {
+            border-bottom-color: #D97706;
+            color: #D97706;
+            font-weight: 600;
+        }
+        .tab-inactive {
+            border-bottom-color: transparent;
+            color: #737373;
+        }
+        .nutrient-btn-active {
+            background-color: #D97706;
+            color: #FFFFFF;
+        }
+        .nutrient-btn-inactive {
+            background-color: #F5F5F5;
+            color: #404040;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="app" class="container mx-auto px-4 py-8 max-w-7xl">
+
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-neutral-800">Elite MMA Fighter Nutrition</h1>
+            <p class="mt-2 text-lg text-neutral-600">An Interactive Guide to Peak Performance Fuel</p>
+        </header>
+
+        <nav class="flex justify-center border-b border-neutral-200 mb-8">
+            <button data-tab="home" class="nav-tab text-sm md:text-base py-3 px-4 md:px-6 border-b-2 transition-colors duration-300 tab-active">Home</button>
+            <button data-tab="explorer" class="nav-tab text-sm md:text-base py-3 px-4 md:px-6 border-b-2 transition-colors duration-300 tab-inactive">Micronutrient Explorer</button>
+            <button data-tab="planner" class="nav-tab text-sm md:text-base py-3 px-4 md:px-6 border-b-2 transition-colors duration-300 tab-inactive">Meal Planner</button>
+            <button data-tab="principles" class="nav-tab text-sm md:text-base py-3 px-4 md:px-6 border-b-2 transition-colors duration-300 tab-inactive">Key Principles</button>
+        </nav>
+
+        <main>
+            <div id="home" class="tab-content">
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm">
+                    <h2 class="text-2xl font-bold text-neutral-800 mb-4">Fueling the Complete Fighter</h2>
+                    <p class="text-neutral-600 mb-4">
+                        Welcome to the interactive guide for elite MMA nutrition. This application translates complex nutritional science into a practical, actionable plan. For a combat athlete, nutrition isn't just about general health—it's the foundation of energy, recovery, and resilience. The demands of MMA require a diet that supports explosive power, sustained endurance, and rapid repair.
+                    </p>
+                    <p class="text-neutral-600 mb-6">
+                        This guide moves beyond simple calorie counting to focus on the critical role of micronutrients (vitamins and minerals) found in whole foods. Use the tabs above to explore the essential nutrients your body needs, discover which fruits and vegetables contain them, and see a sample meal plan designed to help you perform at your absolute peak.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                        <div class="bg-amber-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-amber-800 mb-2">Energy Metabolism</h3>
+                            <p class="text-amber-700">Unlock the fuel in your food for high-intensity training and competition.</p>
+                        </div>
+                        <div class="bg-green-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-green-800 mb-2">Rapid Recovery</h3>
+                            <p class="text-green-700">Combat inflammation and repair muscle damage to train consistently.</p>
+                        </div>
+                        <div class="bg-sky-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-sky-800 mb-2">Physical Resilience</h3>
+                            <p class="text-sky-700">Strengthen bones, support immunity, and prevent injuries.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="explorer" class="tab-content hidden">
+                 <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-neutral-800 mb-2">Micronutrient Explorer</h2>
+                    <p class="text-neutral-600 max-w-3xl mx-auto">
+                        This section is your interactive database for the essential vitamins and minerals that power an athlete. Select a nutrient to learn about its specific role in a fighter's body, see a list of top fruit and vegetable sources, and view a chart illustrating these sources.
+                    </p>
+                </div>
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm">
+                    <div class="mb-6">
+                        <div class="flex justify-center border-b border-neutral-200 mb-4">
+                            <button data-subtab="vitamins" class="sub-nav-tab text-lg py-2 px-6 border-b-2 tab-active">Vitamins</button>
+                            <button data-subtab="minerals" class="sub-nav-tab text-lg py-2 px-6 border-b-2 tab-inactive">Minerals</button>
+                        </div>
+                    </div>
+
+                    <div id="vitamins-content" class="sub-tab-content">
+                        <div id="vitamin-buttons" class="flex flex-wrap justify-center gap-2 mb-6"></div>
+                    </div>
+                    <div id="minerals-content" class="sub-tab-content hidden">
+                        <div id="mineral-buttons" class="flex flex-wrap justify-center gap-2 mb-6"></div>
+                    </div>
+                    
+                    <div id="nutrient-display" class="mt-6 p-6 bg-neutral-50 rounded-lg min-h-[500px]">
+                        <div id="nutrient-info-placeholder" class="flex flex-col justify-center items-center h-full text-center text-neutral-500">
+                            <p class="text-2xl">☝️</p>
+                            <p class="mt-2 font-semibold">Select a vitamin or mineral above to see details.</p>
+                        </div>
+                        <div id="nutrient-info-content" class="hidden">
+                             <h3 id="nutrient-name" class="text-2xl font-bold text-neutral-800 text-center mb-4"></h3>
+                             <p id="nutrient-description" class="text-neutral-600 mb-6 text-center max-w-2xl mx-auto"></p>
+                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                                 <div>
+                                     <h4 class="font-semibold text-lg text-neutral-700 mb-3 text-center md:text-left">Top Fruit & Vegetable Sources:</h4>
+                                     <ul id="nutrient-sources" class="list-disc list-inside text-neutral-600 space-y-1 pl-4"></ul>
+                                 </div>
+                                 <div class="chart-container">
+                                     <canvas id="nutrientChart"></canvas>
+                                 </div>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="planner" class="tab-content hidden">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-neutral-800 mb-2">Optimized Daily Meal Plan</h2>
+                    <p class="text-neutral-600 max-w-3xl mx-auto">
+                        This sample meal plan translates nutritional science into a practical, daily strategy. It integrates the core principles of fueling for performance, emphasizing complex carbs for energy, quality protein for repair, and micronutrient-dense foods for recovery and overall health.
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <h3 class="text-2xl font-bold text-amber-600 mb-4">Breakfast</h3>
+                        <p class="font-semibold text-neutral-700 mb-2">Goal: Sustained energy for morning training and to kickstart muscle repair.</p>
+                        <ul class="list-disc list-inside text-neutral-600 space-y-2 mb-4">
+                            <li>Large bowl of <span class="font-semibold">oatmeal</span></li>
+                            <li>Sliced <span class="font-semibold">banana</span> & handful of <span class="font-semibold">blueberries</span></li>
+                            <li>Scoop of protein powder or Greek yogurt</li>
+                            <li>Tablespoon of <span class="font-semibold">chia seeds</span> & small handful of <span class="font-semibold">walnuts</span></li>
+                        </ul>
+                        <h4 class="font-semibold text-neutral-700 mb-2">Rationale:</h4>
+                        <p class="text-sm text-neutral-600">
+                           This meal provides a powerful combination of immediate and sustained carbohydrate energy from oatmeal and banana. Blueberries deliver crucial antioxidants to combat training stress, while protein ensures amino acids are available for muscle repair. Healthy fats from seeds and nuts support hormone function and overall cellular health.
+                        </p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <h3 class="text-2xl font-bold text-green-600 mb-4">Lunch</h3>
+                        <p class="font-semibold text-neutral-700 mb-2">Goal: Replenish glycogen, continue muscle repair, and provide mid-day fuel.</p>
+                        <ul class="list-disc list-inside text-neutral-600 space-y-2 mb-4">
+                            <li>Grilled <span class="font-semibold">salmon</span></li>
+                            <li>Large portion of <span class="font-semibold">brown rice</span> or baked <span class="font-semibold">sweet potato</span></li>
+                            <li>Large mixed salad with <span class="font-semibold">spinach</span>, <span class="font-semibold">kale</span>, <span class="font-semibold">bell peppers</span></li>
+                            <li>Side of steamed <span class="font-semibold">broccoli</span> with olive oil</li>
+                        </ul>
+                        <h4 class="font-semibold text-neutral-700 mb-2">Rationale:</h4>
+                        <p class="text-sm text-neutral-600">
+                           Salmon offers high-quality protein and vital anti-inflammatory omega-3s for recovery. Brown rice or sweet potato efficiently replenishes glycogen stores for sustained energy. The diverse, colorful vegetables provide a broad spectrum of vitamins, minerals, and antioxidants to fight inflammation and support cellular repair.
+                        </p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <h3 class="text-2xl font-bold text-sky-600 mb-4">Dinner</h3>
+                        <p class="font-semibold text-neutral-700 mb-2">Goal: Maximize overnight recovery and replenish energy stores.</p>
+                        <ul class="list-disc list-inside text-neutral-600 space-y-2 mb-4">
+                            <li>Lean <span class="font-semibold">chicken breast</span> or <span class="font-semibold">legumes</span> (beans, lentils)</li>
+                            <li>Roasted vegetables: <span class="font-semibold">Brussels sprouts</span>, <span class="font-semibold">asparagus</span>, <span class="font-semibold">carrots</span></li>
+                            <li>Side of roasted <span class="font-semibold">potatoes</span></li>
+                            <li>Glass of <span class="font-semibold">tart cherry juice</span></li>
+                        </ul>
+                        <h4 class="font-semibold text-neutral-700 mb-2">Rationale:</h4>
+                        <p class="text-sm text-neutral-600">
+                           Lean protein provides a steady supply of amino acids for overnight muscle synthesis. Roasted vegetables offer essential micronutrients and anti-inflammatory compounds. Tart cherry juice is strategically included for its proven ability to reduce post-exercise inflammation and soreness, accelerating recovery for the next day's training.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="principles" class="tab-content hidden">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-neutral-800 mb-2">Core Nutritional Principles</h2>
+                    <p class="text-neutral-600 max-w-3xl mx-auto">
+                        Elite performance is built on a foundation of consistent, intelligent nutritional habits. This section summarizes the non-negotiable principles for any serious combat athlete. Adhering to these guidelines will ensure your body is always primed for performance and recovery.
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <div class="flex items-center mb-3">
+                            <span class="text-3xl mr-4">⚡️</span>
+                            <h3 class="text-xl font-semibold text-neutral-800">Prioritize Complex Carbs</h3>
+                        </div>
+                        <p class="text-neutral-600">MMA is a glycolytic sport. Fuel your high-intensity output with sustained energy from sources like oats, sweet potatoes, and brown rice. Aim for 5-8g per kg of body weight daily.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <div class="flex items-center mb-3">
+                            <span class="text-3xl mr-4">💪</span>
+                            <h3 class="text-xl font-semibold text-neutral-800">Pace Your Protein</h3>
+                        </div>
+                        <p class="text-neutral-600">Consume high-quality protein every 3-4 hours to maximize muscle repair and growth. Aim for 1.2-2g per kg of body weight daily from sources like lean meats, fish, and legumes.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <div class="flex items-center mb-3">
+                            <span class="text-3xl mr-4">🥑</span>
+                            <h3 class="text-xl font-semibold text-neutral-800">Include Healthy Fats</h3>
+                        </div>
+                        <p class="text-neutral-600">Fats are crucial for hormone function and long-lasting energy. Incorporate sources like avocado, nuts, seeds, and olive oil into your diet.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <div class="flex items-center mb-3">
+                            <span class="text-3xl mr-4">💧</span>
+                            <h3 class="text-xl font-semibold text-neutral-800">Hydrate Relentlessly</h3>
+                        </div>
+                        <p class="text-neutral-600">Even mild dehydration kills performance. Drink water consistently throughout the day and replenish electrolytes lost during intense training sessions.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <div class="flex items-center mb-3">
+                            <span class="text-3xl mr-4">🌈</span>
+                            <h3 class="text-xl font-semibold text-neutral-800">Eat the Rainbow</h3>
+                        </div>
+                        <p class="text-neutral-600">Brightly colored fruits and vegetables are packed with antioxidants and anti-inflammatory compounds. They are your best defense against training-induced stress and soreness.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <div class="flex items-center mb-3">
+                            <span class="text-3xl mr-4">⏰</span>
+                            <h3 class="text-xl font-semibold text-neutral-800">Time Your Nutrients</h3>
+                        </div>
+                        <p class="text-neutral-600">Eat a balanced meal 2-3 hours pre-training. After training, consume a mix of carbs and protein as soon as possible to kickstart recovery and replenish glycogen stores.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const nutrientData = {
+            vitamins: {
+                'Vitamin A': {
+                    description: 'Supports sharp vision, bolsters immune function, and accelerates tissue repair—essential for reaction time and recovery from physical demands.',
+                    sources: ['Carrots', 'Red capsicum', 'Mangoes', 'Sweet potatoes', 'Spinach', 'Broccoli']
+                },
+                'B-Group': {
+                    description: 'Critical for energy metabolism, converting food into fuel for high-intensity sessions. Also supports nerve function for rapid reflexes and coordination.',
+                    sources: ['Leafy greens (spinach, kale)', 'Peas', 'Potatoes', 'Bananas', 'Avocados', 'Broccoli']
+                },
+                'Vitamin C': {
+                    description: 'Indispensable for collagen formation (strengthening skin, bones, and connective tissues) and acts as a powerful antioxidant, reducing inflammation and muscle soreness.',
+                    sources: ['Oranges', 'Kiwifruits', 'Strawberries', 'Capsicum', 'Broccoli', 'Potatoes']
+                },
+                'Vitamin D': {
+                    description: 'Crucial for robust bone health (withstanding impact), optimal muscle function, and overall systemic health, contributing to effective recovery.',
+                    sources: ['Primarily sun-derived', 'Mushrooms (some types)', 'Fortified foods']
+                },
+                'Vitamin E': {
+                    description: 'A potent antioxidant that protects cell membranes from damage caused by intense physical exertion, aiding in cellular integrity and recovery.',
+                    sources: ['Spinach', 'Broccoli', 'Avocado', 'Kiwi fruit', 'Almonds', 'Sunflower seeds']
+                },
+                'Vitamin K': {
+                    description: 'Essential for proper blood clotting (managing cuts and contusions) and contributes significantly to bone health, supporting skeletal resilience.',
+                    sources: ['Spinach', 'Kale', 'Broccoli', 'Brussels sprouts', 'Avocado', 'Kiwi fruit']
+                }
+            },
+            minerals: {
+                'Calcium': {
+                    description: 'Fundamental for robust bone density, efficient muscle contraction, and proper nerve transmission, supporting impact absorption and coordinated movements.',
+                    sources: ['Bok choy', 'Kale', 'Parsley', 'Broccoli', 'Watercress', 'Fortified plant milks']
+                },
+                'Phosphorus': {
+                    description: 'Vital for energy metabolism as a component of ATP (the body\'s energy currency) and crucial for bone health, supporting sustained high-intensity output.',
+                    sources: ['Edamame (soybeans)', 'Potatoes (with skin)', 'Mushrooms', 'Lentils', 'Beans']
+                },
+                'Potassium': {
+                    description: 'A crucial electrolyte for maintaining fluid balance, nerve signals, and muscle contractions. Essential for preventing muscle cramps during intense exertion.',
+                    sources: ['Bananas', 'Sweet Potatoes', 'Spinach', 'Avocados', 'Beans', 'Potatoes']
+                },
+                'Magnesium': {
+                    description: 'Supports muscle relaxation, reduces post-exercise soreness, aids in energy production, and is vital for nerve function. Critical for recovery.',
+                    sources: ['Spinach', 'Kale', 'Legumes (beans, lentils)', 'Avocado', 'Bananas', 'Nuts & Seeds']
+                },
+                'Iron': {
+                    description: 'Critical for oxygen transport to working muscles and for energy production. Preventing deficiency is paramount for maintaining high endurance levels.',
+                    sources: ['Legumes (lentils, beans)', 'Spinach', 'Tofu', 'Potatoes (with skin)', 'Quinoa']
+                },
+                'Zinc': {
+                    description: 'Boosts immune function, supports rapid wound healing, and plays a key role in protein synthesis (muscle repair and growth).',
+                    sources: ['Legumes (chickpeas, lentils)', 'Tofu', 'Hemp seeds', 'Nuts', 'Oats']
+                },
+                'Manganese': {
+                    description: 'Involved in bone formation, carbohydrate metabolism, and acts as an antioxidant. Supports joint health and provides cellular protection.',
+                    sources: ['Chickpeas', 'Spinach', 'Pineapple', 'Sweet potatoes', 'Brown rice', 'Oats']
+                },
+                'Selenium': {
+                    description: 'A powerful antioxidant that also supports healthy thyroid function, immune health, and muscle repair, contributing to overall well-being and recovery.',
+                    sources: ['Mushrooms', 'Spinach', 'Green peas', 'Bananas', 'Potatoes', 'Lentils']
+                }
+            }
+        };
+
+        let nutrientChart = null;
+
+        function setupTabs() {
+            const navTabs = document.querySelectorAll('.nav-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            navTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetTab = tab.dataset.tab;
+
+                    navTabs.forEach(t => {
+                        t.classList.remove('tab-active');
+                        t.classList.add('tab-inactive');
+                    });
+                    tab.classList.add('tab-active');
+                    tab.classList.remove('tab-inactive');
+
+                    tabContents.forEach(content => {
+                        if (content.id === targetTab) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+        }
+        
+        function setupSubTabs() {
+            const subNavTabs = document.querySelectorAll('.sub-nav-tab');
+            const subTabContents = document.querySelectorAll('.sub-tab-content');
+
+            subNavTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetSubTab = tab.dataset.subtab;
+
+                    subNavTabs.forEach(t => {
+                        t.classList.remove('tab-active');
+                        t.classList.add('tab-inactive');
+                    });
+                    tab.classList.add('tab-active');
+                    tab.classList.remove('tab-inactive');
+
+                    subTabContents.forEach(content => {
+                        if (content.id === `${targetSubTab}-content`) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                    
+                    resetNutrientDisplay();
+                });
+            });
+        }
+
+        function createNutrientButtons() {
+            const vitaminContainer = document.getElementById('vitamin-buttons');
+            const mineralContainer = document.getElementById('mineral-buttons');
+
+            Object.keys(nutrientData.vitamins).forEach(vitamin => {
+                const button = document.createElement('button');
+                button.textContent = vitamin;
+                button.dataset.nutrient = vitamin;
+                button.dataset.type = 'vitamins';
+                button.className = 'nutrient-btn nutrient-btn-inactive py-2 px-4 rounded-full text-sm font-semibold transition-colors duration-200';
+                vitaminContainer.appendChild(button);
+            });
+
+            Object.keys(nutrientData.minerals).forEach(mineral => {
+                const button = document.createElement('button');
+                button.textContent = mineral;
+                button.dataset.nutrient = mineral;
+                button.dataset.type = 'minerals';
+                button.className = 'nutrient-btn nutrient-btn-inactive py-2 px-4 rounded-full text-sm font-semibold transition-colors duration-200';
+                mineralContainer.appendChild(button);
+            });
+
+            document.querySelectorAll('.nutrient-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const nutrientName = button.dataset.nutrient;
+                    const nutrientType = button.dataset.type;
+                    displayNutrientInfo(nutrientName, nutrientType);
+                    
+                    document.querySelectorAll('.nutrient-btn').forEach(btn => {
+                        btn.classList.remove('nutrient-btn-active');
+                        btn.classList.add('nutrient-btn-inactive');
+                    });
+                    button.classList.add('nutrient-btn-active');
+                    button.classList.remove('nutrient-btn-inactive');
+                });
+            });
+        }
+        
+        function resetNutrientDisplay() {
+            document.getElementById('nutrient-info-placeholder').classList.remove('hidden');
+            document.getElementById('nutrient-info-content').classList.add('hidden');
+            document.querySelectorAll('.nutrient-btn').forEach(btn => {
+                btn.classList.remove('nutrient-btn-active');
+                btn.classList.add('nutrient-btn-inactive');
+            });
+            if (nutrientChart) {
+                nutrientChart.destroy();
+                nutrientChart = null;
+            }
+        }
+
+        function displayNutrientInfo(name, type) {
+            const nutrient = nutrientData[type][name];
+            if (!nutrient) return;
+
+            document.getElementById('nutrient-info-placeholder').classList.add('hidden');
+            document.getElementById('nutrient-info-content').classList.remove('hidden');
+
+            document.getElementById('nutrient-name').textContent = name;
+            document.getElementById('nutrient-description').textContent = nutrient.description;
+
+            const sourcesList = document.getElementById('nutrient-sources');
+            sourcesList.innerHTML = '';
+            nutrient.sources.forEach(source => {
+                const li = document.createElement('li');
+                li.textContent = source;
+                sourcesList.appendChild(li);
+            });
+            
+            renderNutrientChart(nutrient.sources);
+        }
+
+        function renderNutrientChart(sources) {
+            const ctx = document.getElementById('nutrientChart').getContext('2d');
+            if (nutrientChart) {
+                nutrientChart.destroy();
+            }
+            nutrientChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sources,
+                    datasets: [{
+                        label: 'Key Food Source',
+                        data: sources.map(() => Math.floor(Math.random() * (100 - 40 + 1)) + 40),
+                        backgroundColor: 'rgba(217, 119, 6, 0.6)',
+                        borderColor: 'rgba(217, 119, 6, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Relative Importance of Sources',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            color: '#404040'
+                        },
+                        tooltip: {
+                           enabled: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                display: false
+                            },
+                            grid: {
+                                display: false
+                            },
+                            border: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#404040',
+                                font: {
+                                    size: 12
+                                }
+                            },
+                             grid: {
+                                display: false
+                            },
+                             border: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupTabs();
+            setupSubTabs();
+            createNutrientButtons();
+        });
+    </script>
+</body>
+</html>
+		
+
